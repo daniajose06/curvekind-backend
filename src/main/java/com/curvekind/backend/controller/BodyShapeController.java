@@ -33,14 +33,6 @@ public class BodyShapeController {
         return toResponse(bodyShape);
     }
 
-    @GetMapping("/{code}/styles")
-    public List<StyleSummaryResponse> getStylesForShape(@PathVariable String code) {
-        return bodyShapeService.getRecommendedStyles(code)
-                .stream()
-                .map(s -> new StyleSummaryResponse(s.getId(), s.getCode(), s.getDisplayName()))
-                .toList();
-    }
-
 
     private BodyShapeResponse toResponse(BodyShape bodyShape) {
         return new BodyShapeResponse(
