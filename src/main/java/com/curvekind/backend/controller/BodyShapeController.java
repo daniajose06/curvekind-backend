@@ -1,8 +1,10 @@
 package com.curvekind.backend.controller;
 
 import com.curvekind.backend.dto.BodyShapeResponse;
+import com.curvekind.backend.dto.StyleSummaryResponse;
 import com.curvekind.backend.entity.BodyShape;
 import com.curvekind.backend.repository.BodyShapeRepository;
+import com.curvekind.backend.service.BodyShapeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +16,7 @@ import java.util.List;
 public class BodyShapeController {
 
     private final BodyShapeRepository bodyShapeRepository;
+    private final BodyShapeService bodyShapeService;
 
     @GetMapping
     public List<BodyShapeResponse> list() {
@@ -29,6 +32,15 @@ public class BodyShapeController {
                 .orElseThrow(() -> new IllegalArgumentException("Body shape not found: " + code));
         return toResponse(bodyShape);
     }
+
+    @GetMapping("/{code}/styles")
+    public List<StyleSummaryResponse> getStylesForShape(@PathVariable String code) {
+        return bodyShapeService.getRecommendedStyles(code)
+                .stream()
+                .map(s -> new StyleSummaryResponse(s.getId(), s.getCode(), s.getDisplayName()))
+                .toList();
+    }
+
 
     private BodyShapeResponse toResponse(BodyShape bodyShape) {
         return new BodyShapeResponse(
