@@ -23,6 +23,9 @@ public class BodyShapeStyle {
     @Column(name = "style_id", nullable = false)
     private Long styleId;
 
+    @Column(nullable = false)
+    private Integer rank;
+
     @Getter
     @Setter
     @NoArgsConstructor
@@ -30,5 +33,6 @@ public class BodyShapeStyle {
     public static class BodyShapeStyleId implements Serializable {
         private Long bodyShapeId;
         private Long styleId;
+        private Integer rank;
     }
 }

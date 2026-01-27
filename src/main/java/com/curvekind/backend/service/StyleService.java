@@ -19,6 +19,6 @@ public class StyleService {
     }
 
     public Style getByCode(String code) {
-        return styleRepository.findByCode(code.toUpperCase()).orElseThrow(() -> new IllegalArgumentException("Style not found for code:" + code));
+        return styleRepository.findByCode(code.toUpperCase()).orElseThrow(() -> new com.curvekind.backend.exception.NotFoundException("Style not found for code:" + code));
     }
 }

@@ -1,6 +1,7 @@
 package com.curvekind.backend.service;
 
 import com.curvekind.backend.dto.ProductCreateRequest;
+import com.curvekind.backend.dto.ProductImageResponse;
 import com.curvekind.backend.dto.ProductResponse;
 import com.curvekind.backend.entity.*;
 import com.curvekind.backend.repository.*;
@@ -19,9 +20,9 @@ public class ProductService {
     private final ProductSizeRepository productSizeRepository;
     private final ProductStyleRepository productStyleRepository;
     private final ProductBodyShapeRepository productBodyShapeRepository;
-
     private final StyleRepository styleRepository;
     private final BodyShapeRepository bodyShapeRepository;
+    private final ProductImageRepository productImageRepository;
 
     public List<ProductResponse> list(String bodyShape, String style, String category) {
         List<Product> products;
@@ -55,6 +56,20 @@ public class ProductService {
                 .build());
 
         Long productId = saved.getId();
+
+        if (req.images() != null) {
+            for (var img : req.images()) {
+                productImageRepository.save(ProductImage.builder()
+                        .productId(productId)
+                        .imageUrl(img.imageUrl())
+                        .altText(img.altText())
+                        .sortOrder(img.sortOrder())
+                        .primary(img.primary())
+                        .createdAt(Instant.now())
+                        .build());
+            }
+        }
+
 
         // sizes
         for (String size : req.sizes()) {
@@ -102,6 +117,19 @@ public class ProductService {
                 .map(pbs -> bodyShapeRepository.findById(pbs.getBodyShapeId()).orElseThrow().getCode())
                 .toList();
 
+        List<ProductImageResponse> images = productImageRepository
+                .findByProductIdOrderByIsPrimaryDescSortOrderAscIdAsc(p.getId())
+                .stream()
+                .map(img -> new ProductImageResponse(
+                        img.getId(),
+                        img.getImageUrl(),
+                        img.getAltText(),
+                        img.getSortOrder(),
+                        img.getPrimary()
+                ))
+                .toList();
+
+
         return new ProductResponse(
                 p.getId(),
                 p.getName(),
@@ -112,7 +140,8 @@ public class ProductService {
                 p.getCreatedAt(),
                 sizes,
                 styleCodes,
-                bodyShapeCodes
+                bodyShapeCodes,
+                images
         );
     }
 }

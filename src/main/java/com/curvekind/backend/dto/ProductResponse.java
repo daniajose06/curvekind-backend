@@ -13,5 +13,6 @@ public record ProductResponse(
         Instant createdAt,
         List<String> sizes,
         List<String> styleCodes,
-        List<String> bodyShapeCodes
+        List<String> bodyShapeCodes,
+        List<ProductImageResponse> images
 ) {}
